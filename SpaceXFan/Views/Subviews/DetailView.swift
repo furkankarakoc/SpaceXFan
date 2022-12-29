@@ -25,7 +25,7 @@ final class DetailsView: UIViewController {
         view.setImage(UIImage(systemName: "heart.fill"), for: .selected)
         view.addTarget(self, action: #selector(tapHeart), for: .touchUpInside)
         view.backgroundColor = .white
-        view.tintColor = .red
+        view.tintColor = .black
         view.layer.cornerRadius = 5
         return view
     }()

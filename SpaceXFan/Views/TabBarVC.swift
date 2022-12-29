@@ -10,18 +10,26 @@ import UIKit
 class TabBarVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let spaceXvc = SpaceXRockets()
+        spaceXvc.viewModel = SpaceXRocketsVM()
+        let vc1 = UINavigationController(rootViewController: spaceXvc)
+        
+        let favoriteRvc = FavoriteRockets()
+        favoriteRvc.viewModel = FavRocketVM()
+        let vc2 = UINavigationController(rootViewController: favoriteRvc)
+        
+        let upcomingRvc = UpcomingRockets()
+        upcomingRvc.viewModel = UpcomingLaunchesVM()
+        let vc3 = UINavigationController(rootViewController: upcomingRvc)
 
-        let vc1 = UINavigationController(rootViewController: SpaceXRockets())
-        let vc2 = UINavigationController(rootViewController: FavoriteRockets())
-        let vc3 = UINavigationController(rootViewController: UpcomingRockets())
+        vc1.tabBarItem.image = UIImage(named: "rocketTabBar")
+        vc2.tabBarItem.image = UIImage(named: "favTabBar")
+        vc3.tabBarItem.image = UIImage(named: "upcomings")
 
-        vc1.tabBarItem.image = UIImage(systemName: "paperplane")
-        vc2.tabBarItem.image = UIImage(systemName: "heart.circle.fill")
-        vc3.tabBarItem.image = UIImage(systemName: "scanner.fill")
-
-        vc1.title = "All SpaceX Rockets"
-        vc2.title = "Favorite Rockets"
-        vc3.title = "Upcoming Launches"
+        vc1.title = "Home"
+        vc2.title = "Favorites"
+        vc3.title = "Upcomings"
 
         tabBar.tintColor = .black
 

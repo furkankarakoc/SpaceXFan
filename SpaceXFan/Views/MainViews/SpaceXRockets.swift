@@ -26,6 +26,8 @@ final class SpaceXRockets: UIViewController {
         view.titleLabel?.numberOfLines = 0
         return view
     }()
+    
+    var viewModel: SpaceXRocketsVM?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +37,7 @@ final class SpaceXRockets: UIViewController {
         tableView.dataSource = self
 
 
-        configureNavigationBar(with: "All SpaceX Rockets")
+        configureNavigationBar(with: "SpaceX Fan")
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: userLoginButton)
         loadTableViewCells()
 
@@ -60,7 +62,7 @@ final class SpaceXRockets: UIViewController {
     }
 
     private func loadTableViewCells() {
-        SpaceXRocketsVM.shared.fetchItems(with: Constant.baseUrl + Constant.fetchByRockets) { [weak self] in
+        viewModel?.fetchItems(with: Constant.baseUrl + Constant.fetchByRockets) { [weak self] in
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
             }
@@ -101,7 +103,7 @@ final class SpaceXRockets: UIViewController {
 extension SpaceXRockets: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return SpaceXRocketsVM.shared.getItemCount()
+        return viewModel?.getItemCount() ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -110,7 +112,7 @@ extension SpaceXRockets: UITableViewDelegate, UITableViewDataSource {
         }
         cell.delegate = self
 
-        let item = SpaceXRocketsVM.shared.getItem(at: indexPath.row)
+        guard let item = viewModel?.getItem(at: indexPath.row) else {return UITableViewCell()}
 
         if let count = FirebaseFireStore.shared.favorite?.filter({ $0 == item.name }).count {
             let isFavorite = count >= 1 ? true : false
@@ -128,7 +130,7 @@ extension SpaceXRockets: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = DetailsView()
 
-        let item = SpaceXRocketsVM.shared.getItem(at: indexPath.row)
+        guard let item = viewModel?.getItem(at: indexPath.row) else {return}
         vc.rocket = item
 
         if let count = FirebaseFireStore.shared.favorite?.filter({ $0 == item.name }).count {

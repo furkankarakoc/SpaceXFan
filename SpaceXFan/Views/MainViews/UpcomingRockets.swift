@@ -15,7 +15,9 @@ final class UpcomingRockets: UIViewController {
         table.separatorStyle = .none
         return table
     }()
-
+    
+    var viewModel: UpcomingLaunchesVM?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,7 +35,7 @@ final class UpcomingRockets: UIViewController {
     }
 
     private func loadTableViewCells() {
-        UpcomingLaunchesVM.shared.fetchItems(with: Constant.baseUrl + Constant.fetchByUpcoming) { [weak self] in
+        viewModel?.fetchItems(with: Constant.baseUrl + Constant.fetchByUpcoming) { [weak self] in
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
             }
@@ -44,22 +46,24 @@ final class UpcomingRockets: UIViewController {
 extension UpcomingRockets: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return UpcomingLaunchesVM.shared.getItemCount()
+        return viewModel?.getItemCount() ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CardUIViewTableCell.identifier, for: indexPath) as? CardUIViewTableCell else {
             return UITableViewCell()
         }
-
-        cell.configure(with: UpcomingLaunchesVM.shared.getItem(at: indexPath.row), isFavoriteHidden: true)
+        
+        guard let item = viewModel?.getItem(at: indexPath.row) else  { return UITableViewCell() }
+        
+        cell.configure(with: item, isFavoriteHidden: true)
         cell.selectionStyle = .none
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = DetailsView()
-        vc.rocket = UpcomingLaunchesVM.shared.getItem(at: indexPath.row)
+        vc.rocket = viewModel?.getItem(at: indexPath.row)
         vc.isFavoriteHidden = true
         navigationController?.pushViewController(vc, animated: true)
     }

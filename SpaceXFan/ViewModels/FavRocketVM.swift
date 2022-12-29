@@ -13,7 +13,7 @@ final class FavRocketVM {
 
     private var items: [Rockets] = []
     private var favorite: [Rockets] = []
-    static let shared = FavRocketVM()
+   
 
     func fetchItems(with urlStr: String, completion: @escaping () -> Void) {
 

@@ -16,6 +16,8 @@ final class FavoriteRockets: UIViewController {
         return table
     }()
 
+    var viewModel: FavRocketVM?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -46,16 +48,16 @@ final class FavoriteRockets: UIViewController {
     }
 
     private func loadTableViewCells() {
-        FavRocketVM.shared.fetchItems(with: Constant.baseUrl + Constant.fetchByRockets) { [weak self] in
+        viewModel?.fetchItems(with: Constant.baseUrl + Constant.fetchByRockets) { [weak self] in
             DispatchQueue.main.async {
-                FavRocketVM.shared.prepareFavorite()
+                self?.viewModel?.prepareFavorite()
                 self?.tableView.reloadData()
             }
         }
     }
 
     @objc func refreshFavorites() {
-        FavRocketVM.shared.prepareFavorite()
+        viewModel?.prepareFavorite()
         tableView.reloadData()
         print("reload")
     }
@@ -65,7 +67,7 @@ final class FavoriteRockets: UIViewController {
 
         checkIfsignIn()
 
-        FavRocketVM.shared.prepareFavorite()
+        viewModel?.prepareFavorite()
         tableView.reloadData()
     }
 }
@@ -73,7 +75,7 @@ final class FavoriteRockets: UIViewController {
 extension FavoriteRockets: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return FavRocketVM.shared.getItemCount()
+        return viewModel?.getItemCount() ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -82,7 +84,7 @@ extension FavoriteRockets: UITableViewDelegate, UITableViewDataSource {
         }
         cell.delegate = self
 
-        let item = FavRocketVM.shared.getItem(at: indexPath.row)
+        guard let item = viewModel?.getItem(at: indexPath.row) else {return UITableViewCell()}
         cell.favorite.isSelected = true
 
         cell.configure(with: item, isFavoriteHidden: false)
@@ -94,7 +96,7 @@ extension FavoriteRockets: UITableViewDelegate, UITableViewDataSource {
 
         let vc = DetailsView()
 
-        let item = FavRocketVM.shared.getItem(at: indexPath.row)
+        guard let item = viewModel?.getItem(at: indexPath.row) else  {return}
         vc.rocket = item
 
         if let count = FirebaseFireStore.shared.favorite?.filter({ $0 == item.name }).count {

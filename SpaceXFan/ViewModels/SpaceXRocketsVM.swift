@@ -12,7 +12,7 @@ import SwiftyJSON
 final class SpaceXRocketsVM {
 
     private var items: [Rockets] = []
-    static let shared = SpaceXRocketsVM()
+    
 
     func fetchItems(with urlStr: String, completion: @escaping () -> Void) {
 
